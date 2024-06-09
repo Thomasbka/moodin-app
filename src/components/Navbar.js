@@ -1,39 +1,66 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Navbar, Nav } from 'react-bootstrap';
+import { NavLink } from 'react-router-dom';
 import styled from 'styled-components';
-import logo from '../assets/logo.png';
-import './Navbar.css';
+import logo from '../assets/logo.png'; // Adjust the path as needed
 
-const Sidebar = styled(Navbar)`
-  height: 100vh;
-  width: 250px;
-  position: fixed;
-  top: 0;
-  left: 0;
+const NavbarContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
   background-color: #343a40;
   color: white;
+  height: 100%;
+  width: 250px;
 `;
 
 const Logo = styled.img`
   width: 100px;
-  margin: 20px auto;
-  display: block;
+  height: 100px;
+  margin-bottom: 20px;
 `;
 
-function AppNavbar() {
-  return (
-    <Sidebar bg="dark" variant="dark" className="d-flex flex-column">
-      <Logo src={logo} alt="Moodin Logo" className="logo"/>
-      <Navbar.Brand as={Link} to="/">Moodin</Navbar.Brand>
-      <Nav className="flex-column">
-        <Nav.Link as={Link} to="/mood-tracker">Mood Tracker</Nav.Link>
-        <Nav.Link as={Link} to="/journal">Journal</Nav.Link>
-        <Nav.Link as={Link} to="/mindfulness">Mindfulness</Nav.Link>
-        <Nav.Link as={Link} to="/mood-history">Mood History</Nav.Link>
-      </Nav>
-    </Sidebar>
-  );
-}
+const NavItem = styled(NavLink)`
+  color: white;
+  text-decoration: none;
+  margin: 10px 0;
+  font-size: 1.2em;
 
-export default AppNavbar;
+  &.active {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  &:hover {
+    color: #007bff;
+  }
+`;
+
+const Navbar = () => {
+  return (
+    <NavbarContainer>
+      <Logo src={logo} alt="App Logo" />
+      <NavItem to="/feed">
+        Feed
+      </NavItem>
+      <NavItem to="/" exact>
+        Home
+      </NavItem>
+      <NavItem to="/mood-tracker">
+        Mood Tracker
+      </NavItem>
+      <NavItem to="/journal">
+        Journal
+      </NavItem>
+      <NavItem to="/mindfulness">
+        Mindfulness
+      </NavItem>
+      <NavItem to="/mood-history">
+        Mood History
+      </NavItem>
+
+    </NavbarContainer>
+  );
+};
+
+export default Navbar;

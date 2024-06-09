@@ -1,6 +1,8 @@
 .App {
   display: flex;
   height: 100vh;
+  width: 100vw;
+  overflow: hidden;
 }
 
 .sidebar {
@@ -11,15 +13,22 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 250px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.show {
+  transform: translateX(0);
 }
 
 .main-content {
+  flex-grow: 1;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* Align items at the top */
   background-color: white;
   padding: 20px;
-  flex-grow: 1;
+  overflow-y: auto; /* Enable vertical scrolling if needed */
 }
 
 @media (max-width: 768px) {
@@ -27,30 +36,11 @@
     position: fixed;
     top: 0;
     left: -250px; /* Hide sidebar by default */
-    width: 250px;
     height: 100%;
-    transition: left 0.3s;
     z-index: 10;
   }
 
   .sidebar.show {
     left: 0; /* Show sidebar when active */
-  }
-
-  .main-content {
-    padding: 20px;
-    flex-grow: 1;
-  }
-
-  .toggle-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 20;
-    background-color: #343a40;
-    color: white;
-    border: none;
-    padding: 10px;
-    cursor: pointer;
   }
 }
