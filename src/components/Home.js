@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Card } from 'react-bootstrap';
+import { Card, Modal, Button } from 'react-bootstrap';
 
 const HomeContainer = styled.div`
   background-color: ${props => props.backgroundColor || 'white'};
@@ -26,19 +26,15 @@ const GridContainer = styled.div`
 
 const PostCard = styled(Card)`
   width: 100%;
+  background-color: ${props => props.backgroundColor}; /* Apply the selected background color */
+  color: ${props => props.textColor}; /* Apply the selected text color */
+  position: relative;
 `;
 
-const MoodIcon = styled.div`
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: ${props => props.color};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  color: white;
-  margin-right: 10px;
+const DeleteButton = styled(Button)`
+  position: absolute;
+  top: 10px;
+  right: 10px;
 `;
 
 const Header = styled.h2`
@@ -46,43 +42,81 @@ const Header = styled.h2`
   margin-bottom: 20px;
 `;
 
+const PostHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const PostTitle = styled.div`
+  font-size: 1.5em;
+  font-weight: bold;
+`;
+
 const Home = () => {
   const [posts, setPosts] = useState(() => {
     const savedPosts = localStorage.getItem('posts');
     return savedPosts ? JSON.parse(savedPosts) : [];
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(null);
 
-  const moodColors = {
-    Happy: 'yellow',
-    Sad: 'blue',
-    Anxious: 'orange',
-    Calm: 'green',
-    Excited: 'red',
-    Bored: 'gray',
-    Weird: 'brown'
+  const handleDeleteClick = (postId) => {
+    setPostToDelete(postId);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    const updatedPosts = posts.filter(post => post.id !== postToDelete);
+    setPosts(updatedPosts);
+    localStorage.setItem('posts', JSON.stringify(updatedPosts));
+    setShowDeleteModal(false);
+    setPostToDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setPostToDelete(null);
   };
 
   return (
     <HomeContainer>
       <ContentContainer>
-        <Header>User</Header>
+        <Header>Past Posts</Header>
         <GridContainer>
           {posts.map(post => (
-            <PostCard key={post.id}>
+            <PostCard key={post.id} backgroundColor={post.backgroundColor} textColor={post.textColor}>
+              <DeleteButton variant="danger" onClick={() => handleDeleteClick(post.id)}>
+                Delete
+              </DeleteButton>
               <Card.Body>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <MoodIcon color={moodColors[post.mood]}>{post.mood.charAt(0)}</MoodIcon>
-                  <div>
-                    <Card.Title>{post.mood}</Card.Title>
-                    <Card.Text>{post.why}</Card.Text>
-                    <Card.Text><strong>Exercises:</strong> {post.exercises}</Card.Text>
-                    <Card.Link href={post.playlist} target="_blank">Listen to Playlist</Card.Link>
-                  </div>
-                </div>
+                <PostHeader>
+                  <PostTitle>{post.mood}</PostTitle>
+                </PostHeader>
+                <Card.Text>{post.why}</Card.Text>
+                <Card.Text><strong>Exercises:</strong> {post.exercises}</Card.Text>
+                <Card.Link href={post.playlist} target="_blank" style={{ color: post.textColor }}>Listen to Playlist</Card.Link>
               </Card.Body>
             </PostCard>
           ))}
         </GridContainer>
+
+        <Modal show={showDeleteModal} onHide={cancelDelete}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Are you sure you want to delete this post?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={cancelDelete}>
+              No
+            </Button>
+            <Button variant="danger" onClick={confirmDelete}>
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </ContentContainer>
     </HomeContainer>
   );
